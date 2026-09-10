@@ -1,4 +1,7 @@
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 // 登録・編集・削除で一覧が変わるため、毎回DBを取得させる
 // 無いと「登録したのに反映されない」状態になる
@@ -18,13 +21,37 @@ export default async function Home() {
   const books = data ?? [];
 
   return (
-    <main>
-      <h1>読書記録</h1>
-      <ul>
-        {books.map((book) => (
-          <li key={book.id}>{book.title}</li>
-        ))}
-      </ul>
+    <main className="mx-auto max-w-2xl p-6 w-full">
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">読書記録</h1>
+        {/* Base UIのButtonはasChildを持たないため、render propで<Link>に差し替えている。
+            nativeButton={false}は、差し替え先がネイティブbuttonではないことをBase UIに伝えるために必須 */}
+        <Button render={<Link href="/books/new" />} nativeButton={false}>
+          新しく登録する
+        </Button>
+      </div>
+
+      {books.length === 0 ? (
+        <p className="rounded border border-dashed p-10 text-center text-gray-500">まだ一件も登録されていません。</p>
+      ) : (
+        <ul className="space-y-3">
+          {books.map((book) => (
+            <li key={book.id}>
+              <Link href={`/books/${book.id}`}>
+                <Card className="transition hover:bg-gray-50">
+                  <CardContent>
+                    <p className="font-semibold">{book.title}</p>
+                    <p className="text-gray-500 ">
+                      {book.author || "著者不明"} ・ {book.status}
+                      {book.rating ? ` ・ ★${book.rating}` : ""}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
   );
 }
