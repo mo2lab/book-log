@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 // 登録・編集・削除で一覧が変わるため、毎回DBを取得させる
@@ -11,7 +11,7 @@ export default async function Home() {
   const { data, error } = await supabase
     .from("books")
     .select("*")
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: false });
 
   // 「本当の取得失敗」と「正常に0件」を区別するため先に弾く
   if (error) throw new Error(error.message);
@@ -24,11 +24,11 @@ export default async function Home() {
     <main className="mx-auto max-w-2xl p-6 w-full">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">読書記録</h1>
-        {/* Base UIのButtonはasChildを持たないため、render propで<Link>に差し替えている。
-            nativeButton={false}は、差し替え先がネイティブbuttonではないことをBase UIに伝えるために必須 */}
-        <Button render={<Link href="/books/new" />} nativeButton={false}>
+        {/* Base UIのButtonはLinkとの併用が非推奨のため、
+            buttonVariants()のクラスを<Link>に直接当てている */}
+        <Link href="/books/new" className={buttonVariants()}>
           新しく登録する
-        </Button>
+        </Link>
       </div>
 
       {books.length === 0 ? (
