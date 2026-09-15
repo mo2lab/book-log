@@ -20,11 +20,26 @@ function readForm(formData: FormData) {
 
 export async function createBook(formData: FormData) {
   const book = readForm(formData);
-  const { error } = await supabase.from("books").insert(book).select();
+  const { error } = await supabase.from("books").insert(book);
   if (error) throw new Error(error.message);
 
-  // 一覧は dynamic='force-dynamic' だが、登録直後にキャッシュが効いて
-  // 反映されない場合があるため、明示的にキャッシュを無効化している
+  // 各ページがforce-dynamicのため実質的な役目はほぼないが、
+  // ブラウザの「戻る」操作でキャッシュされた一覧が一瞬古いまま表示されるのを防ぐために残している。
   revalidatePath("/");
   redirect("/");
+}
+
+export async function updateBook(formData: FormData) {
+  // Server Actionはform actionに直接渡しているためFormDataしか受け取れない。
+  // idは関数の引数ではなく、edit画面のhiddenフィールド経由でここに渡ってくる。
+  const id = String(formData.get("id"));
+  const book = readForm(formData);
+  const { error } = await supabase.from("books").update(book).eq("id", id);
+  if (error) throw new Error(error.message);
+
+  // createBookと同じ理由（force-dynamic下ではほぼ保険）。
+  // 一覧・詳細の両方が編集の影響を受けるため両方に対して呼んでいる。
+  revalidatePath("/");
+  revalidatePath(`/books/${id}`);
+  redirect(`/books/${id}`);
 }
