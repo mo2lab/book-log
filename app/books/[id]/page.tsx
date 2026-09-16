@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { deleteBook } from "../actions";
 
 // 一覧と同じ理由（登録・編集・削除の反映のため）で毎回DB取得させる
 export const dynamic = "force-dynamic";
@@ -39,7 +40,7 @@ export default async function BookDetailPage({
         {book.memo || "感想はまだ書かれていません。"}
       </p>
 
-      <div className="mt-8">
+      <div className="mt-8 flex gap-2">
         {/* Base UIのButtonはLinkとの併用が非推奨のため、buttonVariants()のクラスを<Link>に直接当てている。
             cn()でラップしないと、baseのborder-transparentがoutlineのborder-borderを打ち消し、
             枠線が消えてGhostのような見た目になる */}
@@ -49,6 +50,17 @@ export default async function BookDetailPage({
         >
           編集する
         </Link>
+
+        <form action={deleteBook}>
+          {/* Server Actionはform actionに直接渡しているためFormDataしか受け取れない。
+              idを渡すには関数の引数ではなくこの隠しフィールド経由にする必要がある */}
+          <input type="hidden" name="id" value={book.id} />
+          {/* 確認ダイアログは未実装。付けるにはクライアントコンポーネント化が必要になり、
+              スコープを広げないという方針のため今回は見送っている */}
+          <Button type="submit" variant="destructive">
+            削除する
+          </Button>
+        </form>
       </div>
     </main>
   );

@@ -43,3 +43,16 @@ export async function updateBook(formData: FormData) {
   revalidatePath(`/books/${id}`);
   redirect(`/books/${id}`);
 }
+
+export async function deleteBook(formData: FormData) {
+  const id = String(formData.get("id"));
+  const { error } = await supabase.from("books").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+
+  // createBookと同じ理由（force-dynamic下ではほぼ保険）。
+  // 一覧が消去の影響を受けるため呼んでいる。
+  revalidatePath("/");
+  // 詳細ページ（/books/[id]）は削除後リダイレクトするため呼ばない。
+  // revalidatePathを呼ばなくても、削除された本のURLに直接アクセスすればnotFound()で404になる。
+  redirect("/");
+}
