@@ -32,7 +32,9 @@ export default async function Home() {
       </div>
 
       {books.length === 0 ? (
-        <p className="rounded border border-dashed p-10 text-center text-gray-500">まだ一件も登録されていません。</p>
+        <p className="rounded border border-dashed p-10 text-center text-gray-500">
+          まだ一件も登録されていません。
+        </p>
       ) : (
         <ul className="space-y-3">
           {books.map((book) => (
@@ -40,8 +42,10 @@ export default async function Home() {
               <Link href={`/books/${book.id}`}>
                 <Card className="transition hover:bg-gray-50">
                   <CardContent>
-                    <p className="font-semibold">{book.title}</p>
-                    <p className="text-gray-500 ">
+                    <p className="font-semibold wrap-break-word">
+                      {book.title}
+                    </p>
+                    <p className="text-gray-500 wrap-break-word">
                       {book.author || "著者不明"} ・ {book.status}
                       {book.rating ? ` ・ ★${book.rating}` : ""}
                     </p>

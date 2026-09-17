@@ -30,13 +30,13 @@ export default async function BookDetailPage({
         ← 一覧に戻る
       </Link>
 
-      <h1 className="text-2xl font-bold mt-4">{book.title}</h1>
-      <p className="text-gray-500 mt-1">
+      <h1 className="text-2xl font-bold mt-4 wrap-break-word">{book.title}</h1>
+      <p className="text-gray-500 mt-1 wrap-break-word">
         {book.author || "著者不明"} ・ {book.status}
         {book.rating ? ` ・ ★${book.rating}` : ""}
       </p>
 
-      <p className="mt-6 whitespace-pre-wrap">
+      <p className="mt-6 whitespace-pre-wrap wrap-break-word">
         {book.memo || "感想はまだ書かれていません。"}
       </p>
 
